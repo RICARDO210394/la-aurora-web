@@ -1,0 +1,15 @@
+{
+  "name": "La Aurora Web",
+  "short_name": "La Aurora",
+  "description": "Noticias, deportes, transmisiones en vivo y La Aurora Radio desde La Aurora, Daule.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#E3342B",
+  "lang": "es-EC",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

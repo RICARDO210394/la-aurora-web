@@ -253,7 +253,7 @@ textarea{min-height:180px;resize:vertical}
 </div>
 
 <audio id="audio" preload="none"></audio>
-<div id="casterPark" style="position:absolute;left:-9999px;top:0;width:600px" aria-hidden="true"></div>
+<div id="casterPark" style="position:absolute;left:-9999px;top:0;width:600px;z-index:5;border-radius:6px;overflow:hidden" aria-hidden="true"></div>
 <dialog id="dlg"></dialog>
 
 <!-- Firebase (opcional, para que todos vean lo que publicas). Pega tu configuración abajo. -->
@@ -584,21 +584,31 @@ $('#miniBtn').onclick=()=>{if(casterOn()){location.hash='#radio';}else toggleRad
 audio.addEventListener('error',()=>{if(playing){playing=false;updateRadioUI();toast('Se perdió la señal de la radio');}});
 
 let casterKey='';
+/* El reproductor de Caster es un iframe: nunca se mueve en el DOM (se recargaría y cortaría el audio).
+   Se coloca encima del recuadro de la sección de radio y se esconde fuera de pantalla en las demás páginas. */
 function mountCaster(){
-  const park=$('#casterPark');if(!casterOn()){park.innerHTML='';casterKey='';return;}
+  const park=$('#casterPark');
+  if(!casterOn()){park.innerHTML='';casterKey='';return;}
   const {token,channel}=casterIds();const key=token+channel;
-  let w=document.getElementById('casterWidget');
-  if(!w||casterKey!==key){
-    park.innerHTML='';casterKey=key;
-    w=document.createElement('div');w.id='casterWidget';w.className='cstrEmbed';
-    w.dataset.type='newStreamPlayer';w.dataset.publictoken=token;w.dataset.theme='light';w.dataset.color='e3342b';w.dataset.channelid=channel;w.dataset.rendered='false';
-    w.setAttribute('data-publicToken',token);w.setAttribute('data-channelId',channel);
-    park.appendChild(w);
+  if(casterKey!==key){
+    casterKey=key;
+    park.innerHTML=`<div data-type="newStreamPlayer" data-publicToken="${esc(token)}" data-theme="light" data-color="e3342b" data-channelId="${esc(channel)}" data-rendered="false" class="cstrEmbed"><a href="https://www.caster.fm">Shoutcast Hosting</a> <a href="https://www.caster.fm">Stream Hosting</a> <a href="https://www.caster.fm">Radio Server Hosting</a></div>`;
     document.querySelectorAll('script[data-caster]').forEach(x=>x.remove());
     const sc=document.createElement('script');sc.src='https://cdn.cloud.caster.fm//widgets/embed.js';sc.dataset.caster='1';document.body.appendChild(sc);
   }
-  const slot=$('#casterSlot');(slot||park).appendChild(w);
+  placeCaster();requestAnimationFrame(placeCaster);setTimeout(placeCaster,600);
 }
+function placeCaster(){
+  const park=$('#casterPark'),slot=$('#casterSlot');
+  if(!slot){park.style.left='-9999px';park.setAttribute('aria-hidden','true');return;}
+  const r=slot.getBoundingClientRect();
+  park.style.left=(r.left+scrollX)+'px';park.style.top=(r.top+scrollY)+'px';park.style.width=r.width+'px';
+  park.removeAttribute('aria-hidden');
+  slot.style.height=Math.max(150,park.offsetHeight)+'px';
+}
+addEventListener('resize',placeCaster);
+addEventListener('load',placeCaster);document.fonts&&document.fonts.ready.then(placeCaster);
+try{new ResizeObserver(()=>placeCaster()).observe(document.getElementById('casterPark'));}catch(e){}
 
 /* ---------- Artículo ---------- */
 function openPost(id){

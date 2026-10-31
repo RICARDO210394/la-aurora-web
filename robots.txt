@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ricardo210394.github.io/la-aurora-web/sitemap.xml

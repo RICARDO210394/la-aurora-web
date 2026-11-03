@@ -1,6 +1,6 @@
 {
-  "name": "La Aurora Web",
-  "short_name": "La Aurora",
+  "name": "La Aurora TV",
+  "short_name": "La Aurora TV",
   "description": "Noticias, deportes, transmisiones en vivo y La Aurora Radio desde La Aurora, Daule.",
   "start_url": "./",
   "scope": "./",
